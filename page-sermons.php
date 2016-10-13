@@ -36,8 +36,10 @@ get_header(); ?>
 					<h1><?php echo get_the_title() ?></h1>
 					<?php while ( have_posts() ) : the_post(); 
 					the_content(); 
-					endwhile ?>
-				<?php endif ?>
+					endwhile; ?>
+					<?php echo all_sermons() ?>
+					<?php 
+				endif; ?>
 			</article>
 			<div class="sidebar">
 				<?php dynamic_sidebar( 'pages-sidebar' ); ?>

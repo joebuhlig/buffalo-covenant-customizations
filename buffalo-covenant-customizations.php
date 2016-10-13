@@ -71,4 +71,17 @@ function get_sermon($audio_url){
 	}
 	return $sermon;
 }
+
+function all_sermons(){
+	$location = 'http://buffalocov.libsyn.com/rss';
+	$xml = simplexml_load_file($location);
+	$items = $xml->xpath('channel/item');
+	$content = "";
+	foreach($items as $item) {
+		$content .= '<div class="sermon">';
+		$content .= date("F j, Y" ,strtotime($item->pubDate)) . ' - <a href="' . trim(parse_url($item->link, PHP_URL_PATH), '/') . '">' . $item->title . '</a>';
+		$content .= '</div>';
+	}
+	return $content;
+}
 ?>
