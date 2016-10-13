@@ -11,14 +11,33 @@
  *
  * @package Buffalo_Covenant_Theme
  */
-
+$sermon = get_sermon(get_query_var('audio_url'));
+if ($sermon) {
+$audio_attrs = array(
+    'src'      => $sermon["link"],
+    'loop'     => '',
+    'autoplay' => get_query_var('autoplay', false),
+    'preload' => 'none'
+);
+}
 get_header(); ?>
 
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
 			<article>
-				<h1>Sermon custom page</h1>
-				<div><?php echo get_query_var('audio_url') ?></div>
+				<?php if (get_query_var('audio_url')) : ?>
+					<h1><?php echo $sermon["title"] ?></h1>
+					<?php echo wp_audio_shortcode($audio_attrs) ?>
+					<div><?php echo $sermon["description"] ?></div>
+					<?php while ( have_posts() ) : the_post(); 
+					the_content(); 
+					endwhile;
+				else : ?>
+					<h1><?php echo get_the_title() ?></h1>
+					<?php while ( have_posts() ) : the_post(); 
+					the_content(); 
+					endwhile ?>
+				<?php endif ?>
 			</article>
 			<div class="sidebar">
 				<?php dynamic_sidebar( 'pages-sidebar' ); ?>

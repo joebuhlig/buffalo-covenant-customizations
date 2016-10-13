@@ -26,6 +26,7 @@ function wpse26388_rewrites_init(){
 add_filter( 'query_vars', 'wpse26388_query_vars' );
 function wpse26388_query_vars( $query_vars ){
     $query_vars[] = 'audio_url';
+    $query_vars[] = 'autoplay';
     return $query_vars;
 }
 
@@ -52,4 +53,22 @@ function sidebar_shortcode($atts, $content="null"){
 	
 }
 add_shortcode('get_sidebar', 'sidebar_shortcode');
+
+function get_sermon($audio_url){
+	$location = 'http://buffalocov.libsyn.com/rss';
+	$xml = simplexml_load_file($location);
+	$items = $xml->xpath('channel/item');
+	$sermon = [];
+	foreach($items as $item) {
+		$link = $item->link;
+		if ($link == "http://buffalocov.libsyn.com/" . $audio_url) {
+			$sermon["title"] = $item->title;
+			$sermon["description"] = $item->description;
+			$url = explode('?', $item->enclosure["url"]);
+			$url = reset($url);
+			$sermon["link"] = $url;
+		}
+	}
+	return $sermon;
+}
 ?>
