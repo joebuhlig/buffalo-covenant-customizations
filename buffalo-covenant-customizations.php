@@ -79,7 +79,12 @@ function all_sermons(){
 	$content = "";
 	foreach($items as $item) {
 		$content .= '<div class="sermon">';
-		$content .= date("F j, Y" ,strtotime($item->pubDate)) . ' - <a href="' . trim(parse_url($item->link, PHP_URL_PATH), '/') . '">' . $item->title . '</a>';
+		$content .= '<a href="' . trim(parse_url($item->link, PHP_URL_PATH), '/') . '">' . $item->title . '</a>';
+		$content .= '<div class="sermon-meta">';
+		$content .= '<span class="sermon-meta-date">' . date("F j, Y" ,strtotime($item->pubDate)) . '</span>';
+		$itunes = $item->children('http://www.itunes.com/dtds/podcast-1.0.dtd');
+		$content .= ' • <span class="sermon-meta-date">' . $itunes->duration . '</span>';
+		$content .= '</div>';
 		$content .= '</div>';
 	}
 	return $content;
