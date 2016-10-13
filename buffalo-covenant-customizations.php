@@ -89,4 +89,104 @@ function all_sermons(){
 	}
 	return $content;
 }
+
+
+add_action( 'widgets_init', function(){
+     register_widget( 'Featured_Event_Widget' );
+});	
+
+class Featured_Event_Widget extends WP_Widget {
+	/**
+	 * Register widget with WordPress.
+	 */
+	function __construct() {
+		parent::__construct(
+			'Featured_Event_Widget', // Base ID
+			__('Featured Event Widget', 'text_domain'), // Name
+			array('description' => __( 'Adds an event to the homepage.', 'text_domain' ),) // Args
+		);
+	}
+	/**
+	 * Front-end display of widget.
+	 *
+	 * @see WP_Widget::widget()
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Saved values from database.
+	 */
+	public function widget( $args, $instance ) {
+				
+		if ( array_key_exists('before_widget', $args) ) echo $args['before_widget'];
+		
+			echo '<div class="featured-event-image"><img src="' . urldecode($instance[ 'featured_event_image' ]) . '"></div>';
+			echo '<div class="featured-event-title">' . $instance[ 'featured_event_title' ] . '</div>';
+			echo '<div class="featured-event-text">' . $instance[ 'featured_event_text' ] . '</div>';
+			
+		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
+	}
+	/**
+	 * Back-end widget form.
+	 *
+	 * @see WP_Widget::form()
+	 *
+	 * @param array $instance Previously saved values from database.
+	 */
+	public function form( $instance ) {
+		
+		if ( isset( $instance[ 'featured_event_image' ] ) ) {
+			$featured_event_image = $instance[ 'featured_event_image' ];
+		}
+		else {
+			$featured_event_image = "";
+		}
+
+		if ( isset( $instance[ 'featured_event_title' ] ) ) {
+			$featured_event_title = $instance[ 'featured_event_title' ];
+		}
+		else {
+			$featured_event_title = "";
+		}
+
+		if ( isset( $instance[ 'featured_event_text' ] ) ) {
+			$featured_event_text = $instance[ 'featured_event_text' ];
+		}
+		else {
+			$featured_event_text = "";
+		}
+		?>
+		
+		<p>
+			<label for="<?php echo $this->get_field_id( 'featured_event_image' ); ?>"><?php _e( 'Image URL:' ); ?></label> 
+			
+			<input id="<?php echo $this->get_field_id( 'featured_event_image' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_image' ); ?>" value="<?php echo $instance[ 'featured_event_image' ] ?>"><br>
+
+			<label for="<?php echo $this->get_field_id( 'featured_event_title' ); ?>"><?php _e( 'Title:' ); ?></label> 
+			
+			<input id="<?php echo $this->get_field_id( 'featured_event_title' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_title' ); ?>" value="<?php echo $instance[ 'featured_event_title' ] ?>"><br>
+
+			<label for="<?php echo $this->get_field_id( 'featured_event_text' ); ?>"><?php _e( 'Text:' ); ?></label> 
+			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('featured_event_text'); ?>" name="<?php echo $this->get_field_name('featured_event_text'); ?>"><?php echo esc_textarea( $instance['featured_event_text'] ); ?></textarea>
+
+		</p>
+		<?php 
+	}
+	/**
+	 * Sanitize widget form values as they are saved.
+	 *
+	 * @see WP_Widget::update()
+	 *
+	 * @param array $new_instance Values just sent to be saved.
+	 * @param array $old_instance Previously saved values from database.
+	 *
+	 * @return array Updated safe values to be saved.
+	 */
+	public function update( $new_instance, $old_instance ) {
+		
+		$instance = array();
+		$instance['featured_event_image'] = ( ! empty( $new_instance['featured_event_image'] ) ) ? strip_tags( $new_instance['featured_event_image'] ) : '';
+		$instance['featured_event_title'] = ( ! empty( $new_instance['featured_event_title'] ) ) ? strip_tags( $new_instance['featured_event_title'] ) : '';
+		$instance['featured_event_text'] = $new_instance['featured_event_text'];
+		return $instance;
+	}
+} // class My_Widget
 ?>
