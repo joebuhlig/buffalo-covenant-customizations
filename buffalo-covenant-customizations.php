@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.2
+Version: 0.1.4
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -156,15 +156,15 @@ class Featured_Event_Widget extends WP_Widget {
 		?>
 		
 		<p>
-			<label for="<?php echo $this->get_field_id( 'featured_event_image' ); ?>"><?php _e( 'Image URL:' ); ?></label> 
+			<label for="<?php echo $this->get_field_id( 'featured_event_image' ); ?>"><?php _e( 'Image URL:' ); ?></label> <br>
 			
 			<input id="<?php echo $this->get_field_id( 'featured_event_image' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_image' ); ?>" value="<?php echo $instance[ 'featured_event_image' ] ?>"><br>
 
-			<label for="<?php echo $this->get_field_id( 'featured_event_title' ); ?>"><?php _e( 'Title:' ); ?></label> 
+			<label for="<?php echo $this->get_field_id( 'featured_event_title' ); ?>"><?php _e( 'Title:' ); ?></label> <br>
 			
 			<input id="<?php echo $this->get_field_id( 'featured_event_title' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_title' ); ?>" value="<?php echo $instance[ 'featured_event_title' ] ?>"><br>
 
-			<label for="<?php echo $this->get_field_id( 'featured_event_text' ); ?>"><?php _e( 'Text:' ); ?></label> 
+			<label for="<?php echo $this->get_field_id( 'featured_event_text' ); ?>"><?php _e( 'Text:' ); ?></label> <br>
 			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('featured_event_text'); ?>" name="<?php echo $this->get_field_name('featured_event_text'); ?>"><?php echo esc_textarea( $instance['featured_event_text'] ); ?></textarea>
 
 		</p>
