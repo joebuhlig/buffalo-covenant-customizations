@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.4
+Version: 0.1.5
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -118,8 +118,8 @@ class Featured_Event_Widget extends WP_Widget {
 				
 		if ( array_key_exists('before_widget', $args) ) echo $args['before_widget'];
 		
-			echo '<div class="featured-event-image"><img src="' . urldecode($instance[ 'featured_event_image' ]) . '"></div>';
-			echo '<div class="featured-event-title">' . $instance[ 'featured_event_title' ] . '</div>';
+			echo '<a href="' . $instance[ 'featured_event_link' ] . '"><div class="featured-event-image"><img src="' . urldecode($instance[ 'featured_event_image' ]) . '"></div>';
+			echo '<div class="featured-event-title">' . $instance[ 'featured_event_title' ] . '</div></a>';
 			echo '<div class="featured-event-text">' . $instance[ 'featured_event_text' ] . '</div>';
 			
 		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
@@ -153,6 +153,12 @@ class Featured_Event_Widget extends WP_Widget {
 		else {
 			$featured_event_text = "";
 		}
+		if ( isset( $instance[ 'featured_event_link' ] ) ) {
+			$featured_event_link = $instance[ 'featured_event_link' ];
+		}
+		else {
+			$featured_event_link = "";
+		}
 		?>
 		
 		<p>
@@ -166,6 +172,10 @@ class Featured_Event_Widget extends WP_Widget {
 
 			<label for="<?php echo $this->get_field_id( 'featured_event_text' ); ?>"><?php _e( 'Text:' ); ?></label> <br>
 			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('featured_event_text'); ?>" name="<?php echo $this->get_field_name('featured_event_text'); ?>"><?php echo esc_textarea( $instance['featured_event_text'] ); ?></textarea>
+
+			<label for="<?php echo $this->get_field_id( 'featured_event_link' ); ?>"><?php _e( 'Link:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'featured_event_link' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_link' ); ?>" value="<?php echo $instance[ 'featured_event_link' ] ?>"><br>
 
 		</p>
 		<?php 
@@ -186,6 +196,7 @@ class Featured_Event_Widget extends WP_Widget {
 		$instance['featured_event_image'] = ( ! empty( $new_instance['featured_event_image'] ) ) ? strip_tags( $new_instance['featured_event_image'] ) : '';
 		$instance['featured_event_title'] = ( ! empty( $new_instance['featured_event_title'] ) ) ? strip_tags( $new_instance['featured_event_title'] ) : '';
 		$instance['featured_event_text'] = $new_instance['featured_event_text'];
+		$instance['featured_event_link'] = ( ! empty( $new_instance['featured_event_link'] ) ) ? strip_tags( $new_instance['featured_event_link'] ) : '';
 		return $instance;
 	}
 } // class My_Widget
