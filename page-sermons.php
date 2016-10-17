@@ -37,7 +37,6 @@ get_header(); ?>
 						<h2>Sorry. We couldn't find that sermon. <a href="/sermons">Try the archive?</a></h2>
 					<?php endif;
 				else : ?>
-					<h1><?php echo get_the_title() ?></h1>
 					<?php while ( have_posts() ) : the_post(); 
 					the_content(); 
 					endwhile; ?>
