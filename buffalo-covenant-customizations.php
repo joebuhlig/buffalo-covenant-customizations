@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.5
+Version: 0.1.6
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -59,16 +59,27 @@ function get_sermon($audio_url){
 	$xml = simplexml_load_file($location);
 	$items = $xml->xpath('channel/item');
 	$sermon = [];
-	foreach($items as $item) {
+	if ($audio_url == "latest"){
+		$item = $items[0];
 		$link = $item->link;
-		if ($link == "http://buffalocov.libsyn.com/" . $audio_url) {
-			$sermon["title"] = $item->title;
-			$sermon["description"] = $item->description;
-			$url = explode('?', $item->enclosure["url"]);
-			$url = reset($url);
-			$sermon["link"] = $url;
-		}
+		$sermon["title"] = $item->title;
+		$sermon["description"] = $item->description;
+		$url = explode('?', $item->enclosure["url"]);
+		$url = reset($url);
+		$sermon["link"] = $url;
 	}
+	else {
+		foreach($items as $item) {
+			$link = $item->link;
+			if ($link == "http://buffalocov.libsyn.com/" . $audio_url) {
+				$sermon["title"] = $item->title;
+				$sermon["description"] = $item->description;
+				$url = explode('?', $item->enclosure["url"]);
+				$url = reset($url);
+				$sermon["link"] = $url;
+			}
+		}
+	};
 	return $sermon;
 }
 

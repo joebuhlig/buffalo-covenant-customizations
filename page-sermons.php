@@ -26,12 +26,16 @@ get_header(); ?>
 		<main id="main" class="site-main" role="main">
 			<article>
 				<?php if (get_query_var('audio_url')) : ?>
-					<h1><?php echo $sermon["title"] ?></h1>
-					<?php echo wp_audio_shortcode($audio_attrs) ?>
-					<div><?php echo $sermon["description"] ?></div>
-					<?php while ( have_posts() ) : the_post(); 
-					the_content(); 
-					endwhile;
+					<?php if ($sermon) : ?>
+						<h1><?php echo $sermon["title"] ?></h1>
+						<?php echo wp_audio_shortcode($audio_attrs) ?>
+						<div><?php echo $sermon["description"] ?></div>
+						<?php while ( have_posts() ) : the_post(); 
+						the_content(); 
+						endwhile; ?>
+					<?php else : ?>
+						<h2>Sorry. We couldn't find that sermon. <a href="/sermons">Try the archive?</a></h2>
+					<?php endif;
 				else : ?>
 					<h1><?php echo get_the_title() ?></h1>
 					<?php while ( have_posts() ) : the_post(); 
