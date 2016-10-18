@@ -211,4 +211,207 @@ class Featured_Event_Widget extends WP_Widget {
 		return $instance;
 	}
 } // class My_Widget
+
+function create_series_taxonomies() {
+	// Add new taxonomy, make it hierarchical (like categories)
+	$labels = array(
+		'name'              => _x( 'Series', 'taxonomy general name' ),
+		'singular_name'     => _x( 'Series', 'taxonomy singular name' ),
+		'search_items'      => __( 'Search Series' ),
+		'all_items'         => __( 'All Series' ),
+		'parent_item'       => __( 'Parent Series' ),
+		'parent_item_colon' => __( 'Parent Series:' ),
+		'edit_item'         => __( 'Edit Series' ),
+		'update_item'       => __( 'Update Series' ),
+		'add_new_item'      => __( 'Add New Series' ),
+		'new_item_name'     => __( 'New Series Name' ),
+		'menu_name'         => __( 'Series' ),
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'public'	    => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'series' )
+	);
+
+	register_taxonomy( 'series', array( 'message' ), $args );
+}
+
+function create_speakers_taxonomies() {
+	// Add new taxonomy, make it hierarchical (like categories)
+	$labels = array(
+		'name'              => _x( 'Speakers', 'taxonomy general name' ),
+		'singular_name'     => _x( 'Speaker', 'taxonomy singular name' ),
+		'search_items'      => __( 'Search Speakers' ),
+		'all_items'         => __( 'All Speakers' ),
+		'parent_item'       => __( 'Parent Speaker' ),
+		'parent_item_colon' => __( 'Parent Speaker:' ),
+		'edit_item'         => __( 'Edit Speaker' ),
+		'update_item'       => __( 'Update Speaker' ),
+		'add_new_item'      => __( 'Add New Speaker' ),
+		'new_item_name'     => __( 'New Speaker Name' ),
+		'menu_name'         => __( 'Speakers' ),
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'public'	    => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'speakers' )
+	);
+
+	register_taxonomy( 'speakers', array( 'message' ), $args );
+}
+
+ function create_message_posttype() {
+// set up labels
+	$labels = array(
+ 		'name' => 'Messages',
+    	'singular_name' => 'Message',
+    	'add_new' => 'Add New Message',
+    	'add_new_item' => 'Add New Message',
+    	'edit_item' => 'Edit Message',
+    	'new_item' => 'New Message',
+    	'all_items' => 'All Messages',
+    	'view_item' => 'View Message',
+    	'search_items' => 'Search Messages',
+    	'not_found' =>  'No Messages Found',
+    	'not_found_in_trash' => 'No Messages found in Trash', 
+    	'parent_item_colon' => '',
+    	'menu_name' => 'Messages',
+    	);
+  register_post_type( 'message',
+    array(
+	'labels' => $labels,
+	'has_archive' => true,
+	'public' => true,
+	'publicly_queryable' => true,
+	'query_var' => true,
+	'supports' => array( 'title'),
+	'taxonomies' => array( 'speakers', 'series', 'post_tag' ),	
+	'exclude_from_search' => false,
+	'capability_type' => 'post',
+	'rewrite' => array( 'slug' => 'messages' ),
+    	'menu_icon' => 'dashicons-video-alt3',
+    )
+  );
+}
+
+/* Meta box setup function. */
+function message_meta_boxes_setup() {
+
+  /* Add meta boxes on the 'add_meta_boxes' hook. */
+  add_action( 'add_meta_boxes', 'message_add_post_meta_boxes' );
+}
+
+function message_add_post_meta_boxes() {
+
+  add_meta_box(
+    'message',      // Unique ID
+    esc_html__( 'Message Settings', 'example' ),    // Title
+    'message_meta_box',   // Callback function
+    'message',         // Admin page (or post type)
+    'normal',         // Context
+    'high'         // Priority
+  );
+}
+
+/* Display the post meta box. */
+function message_meta_box( $object, $box ) { ?>
+
+  <?php wp_nonce_field( basename( __FILE__ ), 'message_nonce' ); ?>
+
+  <p>
+    <label for="vimeo-link"><?php _e( "Vimeo ID", 'example' ); ?></label>
+    <br />
+    <input type="text" name="vimeo-link" id="vimeo-link" value="<?php echo esc_attr( get_post_meta( $object->ID, 'vimeo_link', true ) ); ?>" size="30" />
+    <br />
+    <label for="video-duration"><?php _e( "Video Duration", 'example' ); ?></label>
+    <br />
+    <input type="text" name="video-duration" id="video-duration" value="<?php echo esc_attr( get_post_meta( $object->ID, 'video_duration', true ) ); ?>" size="30" placeholder="hh:mm:ss" />
+    </p>
+<?php }
+
+/* Save the meta box's post metadata. */
+function message_save_post_class_meta( $post_id ) {
+  global $post;
+  
+  /* Verify the nonce before proceeding. */
+  if ( !isset( $_POST['message_nonce'] ) || !wp_verify_nonce( $_POST['message_nonce'], basename( __FILE__ ) ) )
+    return $post_id;
+
+  /* Get the post type object. */
+  $post_type = get_post_type_object( $post->post_type );
+
+  /* Check if the current user has permission to edit the post. */
+  if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
+    return $post_id;
+
+  /* Get the posted data and sanitize it for use as an HTML class. */
+  $new_vimeo_link_value = ( isset( $_POST['vimeo-link'] ) ? $_POST['vimeo-link'] : '' );
+  $new_video_duration_value = ( isset( $_POST['video-duration'] ) ? $_POST['video-duration'] : '' );
+  $new_video_sort_value = ( isset( $_POST['video-sort'] ) ? $_POST['video-sort'] : '' );
+
+
+  update_message_meta($post->ID, 'vimeo_link', $new_vimeo_link_value);
+  update_message_meta($post->ID, 'video_duration', $new_video_duration_value);
+  update_message_meta($post->ID, 'video_sort', $new_video_sort_value);
+}
+
+function update_message_meta($post_id, $meta_key, $new_meta_value){
+  /* Get the meta value of the custom field key. */
+  $meta_value = get_post_meta( $post_id, $meta_key, true );
+
+  /* If a new meta value was added and there was no previous value, add it. */
+  if ( $new_meta_value && '' == $meta_value )
+    add_post_meta( $post_id, $meta_key, $new_meta_value, true );
+
+  /* If the new meta value does not match the old value, update it. */
+  elseif ( $new_meta_value && $new_meta_value != $meta_value )
+    update_post_meta( $post_id, $meta_key, $new_meta_value );
+
+  /* If there is no new meta value but an old value exists, delete it. */
+  elseif ( '' == $new_meta_value && $meta_value )
+    delete_post_meta( $post_id, $meta_key, $meta_value );
+}
+
+function get_custom_post_type_template($single_template) {
+     global $post;
+
+     if ($post->post_type == 'message') {
+          $single_template = dirname( __FILE__ ) . '/single-message.php';
+     }
+     return $single_template;
+}
+
+add_filter('template_include', 'messages_template');
+
+function messages_template( $template ) {
+  if ( is_post_type_archive('message') ) {
+    $theme_files = array('archive-message.php', dirname( __FILE__ ) . '/archive-message.php');
+    $exists_in_theme = locate_template($theme_files, false);
+    if ( $exists_in_theme != '' ) {
+      return $exists_in_theme;
+    } else {
+      return plugin_dir_path(__FILE__) . 'archive-lesson.php';
+    }
+  }
+  return $template;
+}
+
+add_filter( 'single_template', 'get_custom_post_type_template' );
+add_action( 'init', 'create_message_posttype' );
+add_action( 'init', 'create_series_taxonomies', 0 );
+add_action( 'init', 'create_speakers_taxonomies', 0 );
+add_action( 'load-post.php', 'message_meta_boxes_setup' );
+add_action( 'load-post-new.php', 'message_meta_boxes_setup' );
+add_action('save_post', 'message_save_post_class_meta');
+
 ?>
