@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.8
+Version: 0.1.9
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -389,21 +389,6 @@ function get_custom_post_type_template($single_template) {
           $single_template = dirname( __FILE__ ) . '/single-message.php';
      }
      return $single_template;
-}
-
-add_filter('template_include', 'messages_template');
-
-function messages_template( $template ) {
-  if ( is_post_type_archive('message') ) {
-    $theme_files = array('archive-message.php', dirname( __FILE__ ) . '/archive-message.php');
-    $exists_in_theme = locate_template($theme_files, false);
-    if ( $exists_in_theme != '' ) {
-      return $exists_in_theme;
-    } else {
-      return plugin_dir_path(__FILE__) . 'archive-lesson.php';
-    }
-  }
-  return $template;
 }
 
 add_filter( 'single_template', 'get_custom_post_type_template' );
