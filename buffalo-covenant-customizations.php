@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.9
+Version: 0.1.10
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -294,7 +294,7 @@ function create_speakers_taxonomies() {
 	'public' => true,
 	'publicly_queryable' => true,
 	'query_var' => true,
-	'supports' => array( 'title'),
+	'supports' => array( 'title', 'editor'),
 	'taxonomies' => array( 'speakers', 'series', 'post_tag' ),	
 	'exclude_from_search' => false,
 	'capability_type' => 'post',
@@ -336,6 +336,24 @@ function message_meta_box( $object, $box ) { ?>
     <label for="video-duration"><?php _e( "Video Duration", 'example' ); ?></label>
     <br />
     <input type="text" name="video-duration" id="video-duration" value="<?php echo esc_attr( get_post_meta( $object->ID, 'video_duration', true ) ); ?>" size="30" placeholder="hh:mm:ss" />
+    <br />
+    <label for="podcast-guid"><?php _e( "Podcast Episode", 'example' ); ?></label>
+    <br />
+    <select name="podcast-guid" id="podcast-guid"><?php
+    	$location = 'http://buffalocov.libsyn.com/rss';
+		$xml = simplexml_load_file($location);
+		$items = $xml->xpath('channel/item');
+		$episode = esc_attr( get_post_meta( $object->ID, 'podcast_guid', true ) );
+		if ($episode){
+			?><option value="">-- None --</option><?php
+		}
+		else {
+			?><option value="" selected>-- None --</option><?php
+		};
+		foreach($items as $item) {
+			?><option value="<?php echo $item->guid ?>" <?php if ($episode == $item->guid) {echo "selected";} ?>><?php  echo date("F j, Y" ,strtotime($item->pubDate)) . " - " . $item->title ?></option><?php
+		};?>
+    </select> 
     </p>
 <?php }
 
@@ -358,11 +376,13 @@ function message_save_post_class_meta( $post_id ) {
   $new_vimeo_link_value = ( isset( $_POST['vimeo-link'] ) ? $_POST['vimeo-link'] : '' );
   $new_video_duration_value = ( isset( $_POST['video-duration'] ) ? $_POST['video-duration'] : '' );
   $new_video_sort_value = ( isset( $_POST['video-sort'] ) ? $_POST['video-sort'] : '' );
+  $new_podcast_guid_value = ( isset( $_POST['podcast-guid'] ) ? $_POST['podcast-guid'] : '' );
 
 
   update_message_meta($post->ID, 'vimeo_link', $new_vimeo_link_value);
   update_message_meta($post->ID, 'video_duration', $new_video_duration_value);
   update_message_meta($post->ID, 'video_sort', $new_video_sort_value);
+  update_message_meta($post->ID, 'podcast_guid', $new_podcast_guid_value);
 }
 
 function update_message_meta($post_id, $meta_key, $new_meta_value){
@@ -382,16 +402,6 @@ function update_message_meta($post_id, $meta_key, $new_meta_value){
     delete_post_meta( $post_id, $meta_key, $meta_value );
 }
 
-function get_custom_post_type_template($single_template) {
-     global $post;
-
-     if ($post->post_type == 'message') {
-          $single_template = dirname( __FILE__ ) . '/single-message.php';
-     }
-     return $single_template;
-}
-
-add_filter( 'single_template', 'get_custom_post_type_template' );
 add_action( 'init', 'create_message_posttype' );
 add_action( 'init', 'create_series_taxonomies', 0 );
 add_action( 'init', 'create_speakers_taxonomies', 0 );
