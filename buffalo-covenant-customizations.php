@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.10
+Version: 0.1.11
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -408,5 +408,126 @@ add_action( 'init', 'create_speakers_taxonomies', 0 );
 add_action( 'load-post.php', 'message_meta_boxes_setup' );
 add_action( 'load-post-new.php', 'message_meta_boxes_setup' );
 add_action('save_post', 'message_save_post_class_meta');
+
+function create_staff_role_taxonomies() {
+	// Add new taxonomy, make it hierarchical (like categories)
+	$labels = array(
+		'name'              => _x( 'Staff Roles', 'taxonomy general name' ),
+		'singular_name'     => _x( 'Staff Role', 'taxonomy singular name' ),
+		'search_items'      => __( 'Search Staff Roles' ),
+		'all_items'         => __( 'All Staff Roles' ),
+		'parent_item'       => __( 'Parent Staff Role' ),
+		'parent_item_colon' => __( 'Parent Staff Role:' ),
+		'edit_item'         => __( 'Edit Staff Role' ),
+		'update_item'       => __( 'Update Staff Role' ),
+		'add_new_item'      => __( 'Add New Staff Role' ),
+		'new_item_name'     => __( 'New Staff Role Name' ),
+		'menu_name'         => __( 'Staff Roles' ),
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'public'	    => false,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => false,
+		'rewrite'           => array( 'slug' => 'staff-roles' )
+	);
+
+	register_taxonomy( 'staff-roles', array( 'staff' ), $args );
+}
+
+function create_staff_posttype() {
+// set up labels
+	$labels = array(
+ 		'name' => 'Staff Members',
+    	'singular_name' => 'Staff Member',
+    	'add_new' => 'Add New Staff Member',
+    	'add_new_item' => 'Add New Staff Member',
+    	'edit_item' => 'Edit Staff Member',
+    	'new_item' => 'New Staff Member',
+    	'all_items' => 'All Staff Members',
+    	'view_item' => 'View Staff Member',
+    	'search_items' => 'Search Staff Members',
+    	'not_found' =>  'No Staff Members Found',
+    	'not_found_in_trash' => 'No Staff Members found in Trash', 
+    	'parent_item_colon' => '',
+    	'menu_name' => 'Staff',
+    	);
+  register_post_type( 'staff',
+    array(
+	'labels' => $labels,
+	'has_archive' => false,
+	'public' => true,
+	'publicly_queryable' => false,
+	'query_var' => false,
+	'supports' => array( 'title', 'editor', 'thumbnail'),
+	'taxonomies' => array( 'staff-roles'),	
+	'exclude_from_search' => true,
+	'capability_type' => 'post',
+	'rewrite' => array( 'slug' => 'staff' ),
+    	'menu_icon' => 'dashicons-groups',
+    )
+  );
+}
+
+/* Meta box setup function. */
+function staff_meta_boxes_setup() {
+
+  /* Add meta boxes on the 'add_meta_boxes' hook. */
+  add_action( 'add_meta_boxes', 'staff_add_post_meta_boxes' );
+}
+
+function staff_add_post_meta_boxes() {
+
+  add_meta_box(
+    'staff',      // Unique ID
+    esc_html__( 'Staff Settings', 'example' ),    // Title
+    'staff_meta_box',   // Callback function
+    'staff',         // Admin page (or post type)
+    'normal',         // Context
+    'high'         // Priority
+  );
+}
+
+/* Display the post meta box. */
+function staff_meta_box( $object, $box ) { ?>
+
+  <?php wp_nonce_field( basename( __FILE__ ), 'staff_nonce' ); ?>
+
+  <p>
+    <label for="staff-title"><?php _e( "Staff Member Title", 'example' ); ?></label>
+    <br />
+    <input type="text" name="staff-title" id="staff-title" value="<?php echo esc_attr( get_post_meta( $object->ID, 'staff_title', true ) ); ?>" size="30" />
+    </p>
+<?php }
+
+/* Save the meta box's post metadata. */
+function staff_save_post_class_meta( $post_id ) {
+  global $post;
+  
+  /* Verify the nonce before proceeding. */
+  if ( !isset( $_POST['staff_nonce'] ) || !wp_verify_nonce( $_POST['staff_nonce'], basename( __FILE__ ) ) )
+    return $post_id;
+
+  /* Get the post type object. */
+  $post_type = get_post_type_object( $post->post_type );
+
+  /* Check if the current user has permission to edit the post. */
+  if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
+    return $post_id;
+
+  /* Get the posted data and sanitize it for use as an HTML class. */
+  $new_staff_title_value = ( isset( $_POST['staff-title'] ) ? $_POST['staff-title'] : '' );
+
+  update_message_meta($post->ID, 'staff_title', $new_staff_title_value);
+}
+
+add_action( 'init', 'create_staff_posttype' );
+add_action( 'init', 'create_staff_role_taxonomies', 0 );
+add_action( 'load-post.php', 'staff_meta_boxes_setup' );
+add_action( 'load-post-new.php', 'staff_meta_boxes_setup' );
+add_action('save_post', 'staff_save_post_class_meta');
 
 ?>
