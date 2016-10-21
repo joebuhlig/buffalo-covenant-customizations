@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.11
+Version: 0.1.12
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -462,7 +462,7 @@ function create_staff_posttype() {
 	'public' => true,
 	'publicly_queryable' => false,
 	'query_var' => false,
-	'supports' => array( 'title', 'editor', 'thumbnail'),
+	'supports' => array( 'title', 'editor', 'thumbnail', 'page-attributes'),
 	'taxonomies' => array( 'staff-roles'),	
 	'exclude_from_search' => true,
 	'capability_type' => 'post',
