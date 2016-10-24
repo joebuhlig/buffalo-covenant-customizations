@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.12
+Version: 0.1.13
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -14,31 +14,12 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: buffalo-covenant-theme
 */
 
-
-add_action( 'init', 'wpse26388_rewrites_init' );
-function wpse26388_rewrites_init(){
-    add_rewrite_rule(
-        '^sermons/([a-zA-Z0-9\-]+)/?',
-        'index.php?pagename=sermons&audio_url=$matches[1]',
-        'top' );
-}
-
 add_filter( 'query_vars', 'wpse26388_query_vars' );
 function wpse26388_query_vars( $query_vars ){
     $query_vars[] = 'audio_url';
     $query_vars[] = 'autoplay';
     return $query_vars;
 }
-
-add_filter( 'page_template', 'wpa3396_page_template' );
-function wpa3396_page_template( $page_template )
-{
-    if ( is_page( 'sermons' ) ) {
-        $page_template = dirname( __FILE__ ) . '/page-sermons.php';
-    }
-    return $page_template;
-}
-
 
 function sidebar_shortcode($atts, $content="null"){
 	extract(shortcode_atts(array('name' => ''), $atts));
@@ -238,7 +219,7 @@ function create_series_taxonomies() {
 		'rewrite'           => array( 'slug' => 'series' )
 	);
 
-	register_taxonomy( 'series', array( 'message' ), $args );
+	register_taxonomy( 'series', array( 'sermon' ), $args );
 }
 
 function create_speakers_taxonomies() {
@@ -267,27 +248,27 @@ function create_speakers_taxonomies() {
 		'rewrite'           => array( 'slug' => 'speakers' )
 	);
 
-	register_taxonomy( 'speakers', array( 'message' ), $args );
+	register_taxonomy( 'speakers', array( 'sermon' ), $args );
 }
 
- function create_message_posttype() {
+ function create_sermon_posttype() {
 // set up labels
 	$labels = array(
- 		'name' => 'Messages',
-    	'singular_name' => 'Message',
-    	'add_new' => 'Add New Message',
-    	'add_new_item' => 'Add New Message',
-    	'edit_item' => 'Edit Message',
-    	'new_item' => 'New Message',
-    	'all_items' => 'All Messages',
-    	'view_item' => 'View Message',
-    	'search_items' => 'Search Messages',
-    	'not_found' =>  'No Messages Found',
-    	'not_found_in_trash' => 'No Messages found in Trash', 
+ 		'name' => 'Sermons',
+    	'singular_name' => 'Sermon',
+    	'add_new' => 'Add New Sermon',
+    	'add_new_item' => 'Add New Sermon',
+    	'edit_item' => 'Edit Sermon',
+    	'new_item' => 'New Sermon',
+    	'all_items' => 'All Sermons',
+    	'view_item' => 'View Sermon',
+    	'search_items' => 'Search Sermons',
+    	'not_found' =>  'No Sermons Found',
+    	'not_found_in_trash' => 'No Sermons found in Trash', 
     	'parent_item_colon' => '',
-    	'menu_name' => 'Messages',
+    	'menu_name' => 'Sermons',
     	);
-  register_post_type( 'message',
+  register_post_type( 'sermon',
     array(
 	'labels' => $labels,
 	'has_archive' => true,
@@ -298,35 +279,35 @@ function create_speakers_taxonomies() {
 	'taxonomies' => array( 'speakers', 'series', 'post_tag' ),	
 	'exclude_from_search' => false,
 	'capability_type' => 'post',
-	'rewrite' => array( 'slug' => 'messages' ),
+	'rewrite' => array( 'slug' => 'sermons' ),
     	'menu_icon' => 'dashicons-video-alt3',
     )
   );
 }
 
 /* Meta box setup function. */
-function message_meta_boxes_setup() {
+function sermon_meta_boxes_setup() {
 
   /* Add meta boxes on the 'add_meta_boxes' hook. */
-  add_action( 'add_meta_boxes', 'message_add_post_meta_boxes' );
+  add_action( 'add_meta_boxes', 'sermon_add_post_meta_boxes' );
 }
 
-function message_add_post_meta_boxes() {
+function sermon_add_post_meta_boxes() {
 
   add_meta_box(
-    'message',      // Unique ID
-    esc_html__( 'Message Settings', 'example' ),    // Title
-    'message_meta_box',   // Callback function
-    'message',         // Admin page (or post type)
+    'sermon',      // Unique ID
+    esc_html__( 'sermon Settings', 'example' ),    // Title
+    'sermon_meta_box',   // Callback function
+    'sermon',         // Admin page (or post type)
     'normal',         // Context
     'high'         // Priority
   );
 }
 
 /* Display the post meta box. */
-function message_meta_box( $object, $box ) { ?>
+function sermon_meta_box( $object, $box ) { ?>
 
-  <?php wp_nonce_field( basename( __FILE__ ), 'message_nonce' ); ?>
+  <?php wp_nonce_field( basename( __FILE__ ), 'sermon_nonce' ); ?>
 
   <p>
     <label for="vimeo-link"><?php _e( "Vimeo ID", 'example' ); ?></label>
@@ -358,11 +339,11 @@ function message_meta_box( $object, $box ) { ?>
 <?php }
 
 /* Save the meta box's post metadata. */
-function message_save_post_class_meta( $post_id ) {
+function sermon_save_post_class_meta( $post_id ) {
   global $post;
   
   /* Verify the nonce before proceeding. */
-  if ( !isset( $_POST['message_nonce'] ) || !wp_verify_nonce( $_POST['message_nonce'], basename( __FILE__ ) ) )
+  if ( !isset( $_POST['sermon_nonce'] ) || !wp_verify_nonce( $_POST['sermon_nonce'], basename( __FILE__ ) ) )
     return $post_id;
 
   /* Get the post type object. */
@@ -379,13 +360,13 @@ function message_save_post_class_meta( $post_id ) {
   $new_podcast_guid_value = ( isset( $_POST['podcast-guid'] ) ? $_POST['podcast-guid'] : '' );
 
 
-  update_message_meta($post->ID, 'vimeo_link', $new_vimeo_link_value);
-  update_message_meta($post->ID, 'video_duration', $new_video_duration_value);
-  update_message_meta($post->ID, 'video_sort', $new_video_sort_value);
-  update_message_meta($post->ID, 'podcast_guid', $new_podcast_guid_value);
+  update_sermon_meta($post->ID, 'vimeo_link', $new_vimeo_link_value);
+  update_sermon_meta($post->ID, 'video_duration', $new_video_duration_value);
+  update_sermon_meta($post->ID, 'video_sort', $new_video_sort_value);
+  update_sermon_meta($post->ID, 'podcast_guid', $new_podcast_guid_value);
 }
 
-function update_message_meta($post_id, $meta_key, $new_meta_value){
+function update_sermon_meta($post_id, $meta_key, $new_meta_value){
   /* Get the meta value of the custom field key. */
   $meta_value = get_post_meta( $post_id, $meta_key, true );
 
@@ -402,12 +383,12 @@ function update_message_meta($post_id, $meta_key, $new_meta_value){
     delete_post_meta( $post_id, $meta_key, $meta_value );
 }
 
-add_action( 'init', 'create_message_posttype' );
+add_action( 'init', 'create_sermon_posttype' );
 add_action( 'init', 'create_series_taxonomies', 0 );
 add_action( 'init', 'create_speakers_taxonomies', 0 );
-add_action( 'load-post.php', 'message_meta_boxes_setup' );
-add_action( 'load-post-new.php', 'message_meta_boxes_setup' );
-add_action('save_post', 'message_save_post_class_meta');
+add_action( 'load-post.php', 'sermon_meta_boxes_setup' );
+add_action( 'load-post-new.php', 'sermon_meta_boxes_setup' );
+add_action('save_post', 'sermon_save_post_class_meta');
 
 function create_staff_role_taxonomies() {
 	// Add new taxonomy, make it hierarchical (like categories)
@@ -521,7 +502,7 @@ function staff_save_post_class_meta( $post_id ) {
   /* Get the posted data and sanitize it for use as an HTML class. */
   $new_staff_title_value = ( isset( $_POST['staff-title'] ) ? $_POST['staff-title'] : '' );
 
-  update_message_meta($post->ID, 'staff_title', $new_staff_title_value);
+  update_sermon_meta($post->ID, 'staff_title', $new_staff_title_value);
 }
 
 add_action( 'init', 'create_staff_posttype' );
