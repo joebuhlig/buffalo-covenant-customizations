@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.13
+Version: 0.1.14
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -296,7 +296,7 @@ function sermon_add_post_meta_boxes() {
 
   add_meta_box(
     'sermon',      // Unique ID
-    esc_html__( 'sermon Settings', 'example' ),    // Title
+    esc_html__( 'Sermon Settings', 'example' ),    // Title
     'sermon_meta_box',   // Callback function
     'sermon',         // Admin page (or post type)
     'normal',         // Context
