@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.14
+Version: 0.1.15
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -275,7 +275,7 @@ function create_speakers_taxonomies() {
 	'public' => true,
 	'publicly_queryable' => true,
 	'query_var' => true,
-	'supports' => array( 'title', 'editor'),
+	'supports' => array( 'title', 'editor', 'thumbnail'),
 	'taxonomies' => array( 'speakers', 'series', 'post_tag' ),	
 	'exclude_from_search' => false,
 	'capability_type' => 'post',
@@ -511,4 +511,76 @@ add_action( 'load-post.php', 'staff_meta_boxes_setup' );
 add_action( 'load-post-new.php', 'staff_meta_boxes_setup' );
 add_action('save_post', 'staff_save_post_class_meta');
 
+
+/* Meta box setup function. */
+function bcc_page_meta_boxes_setup() {
+
+  /* Add meta boxes on the 'add_meta_boxes' hook. */
+  add_action( 'add_meta_boxes', 'bcc_page_add_post_meta_boxes' );
+}
+
+function bcc_page_add_post_meta_boxes() {
+
+  add_meta_box(
+    'bcc_page',      // Unique ID
+    esc_html__( 'BCC Settings', 'example' ),    // Title
+    'bcc_page_meta_box',   // Callback function
+    'page',         // Admin page (or post type)
+    'normal',         // Context
+    'high'         // Priority
+  );
+}
+
+/* Display the post meta box. */
+function bcc_page_meta_box( $object, $box ) { ?>
+
+  <?php wp_nonce_field( basename( __FILE__ ), 'bcc_page_nonce' ); ?>
+
+  <p>
+    <label for="hide-page-title"><?php _e( "Hide Page Title?", 'example' ); ?></label>
+    <input type="checkbox" name="hide-page-title" id="hide-page-title" <?php if (get_post_meta( $object->ID, 'hide_page_title', true ) ): ?>checked<?php endif; ?> />
+    </p>
+<?php }
+
+/* Save the meta box's post metadata. */
+function bcc_page_save_post_class_meta( $post_id ) {
+  global $post;
+  
+  /* Verify the nonce before proceeding. */
+  if ( !isset( $_POST['bcc_page_nonce'] ) || !wp_verify_nonce( $_POST['bcc_page_nonce'], basename( __FILE__ ) ) )
+    return $post_id;
+
+  /* Get the post type object. */
+  $post_type = get_post_type_object( $post->post_type );
+
+  /* Check if the current user has permission to edit the post. */
+  if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
+    return $post_id;
+
+  /* Get the posted data and sanitize it for use as an HTML class. */
+  $new_hide_page_title_value = isset( $_POST['hide-page-title']);
+
+  update_bcc_page_meta($post->ID, 'hide_page_title', $new_hide_page_title_value);
+}
+
+function update_bcc_page_meta($post_id, $meta_key, $new_meta_value){
+  /* Get the meta value of the custom field key. */
+  $meta_value = get_post_meta( $post_id, $meta_key, true );
+
+  /* If a new meta value was added and there was no previous value, add it. */
+  if ( $new_meta_value && '' == $meta_value )
+    add_post_meta( $post_id, $meta_key, $new_meta_value, true );
+
+  /* If the new meta value does not match the old value, update it. */
+  elseif ( $new_meta_value && $new_meta_value != $meta_value )
+    update_post_meta( $post_id, $meta_key, $new_meta_value );
+
+  /* If there is no new meta value but an old value exists, delete it. */
+  elseif ( '' == $new_meta_value && $meta_value )
+    delete_post_meta( $post_id, $meta_key, $meta_value );
+}
+
+add_action( 'load-post.php', 'bcc_page_meta_boxes_setup' );
+add_action( 'load-post-new.php', 'bcc_page_meta_boxes_setup' );
+add_action('save_post', 'bcc_page_save_post_class_meta');
 ?>
