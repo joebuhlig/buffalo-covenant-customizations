@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.16
+Version: 0.1.17
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -271,7 +271,7 @@ function create_speakers_taxonomies() {
   register_post_type( 'sermon',
     array(
 	'labels' => $labels,
-	'has_archive' => false,
+	'has_archive' => true,
 	'public' => true,
 	'publicly_queryable' => true,
 	'query_var' => true,
