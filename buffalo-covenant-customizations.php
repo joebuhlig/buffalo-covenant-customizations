@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.17
+Version: 0.1.18
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -251,6 +251,36 @@ function create_speakers_taxonomies() {
 	register_taxonomy( 'speakers', array( 'sermon' ), $args );
 }
 
+function create_passages_taxonomies() {
+	// Add new taxonomy, make it hierarchical (like categories)
+	$labels = array(
+		'name'              => _x( 'Passages', 'taxonomy general name' ),
+		'singular_name'     => _x( 'Passage', 'taxonomy singular name' ),
+		'search_items'      => __( 'Search Passages' ),
+		'all_items'         => __( 'All Passages' ),
+		'parent_item'       => __( 'Parent Passage' ),
+		'parent_item_colon' => __( 'Parent Passage:' ),
+		'edit_item'         => __( 'Edit Passage' ),
+		'update_item'       => __( 'Update Passage' ),
+		'add_new_item'      => __( 'Add New Passage' ),
+		'new_item_name'     => __( 'New Passage Name' ),
+		'menu_name'         => __( 'Passages' ),
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'public'	    => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'passages' )
+	);
+
+	register_taxonomy( 'passages', array( 'sermon' ), $args );
+}
+
+
  function create_sermon_posttype() {
 // set up labels
 	$labels = array(
@@ -276,7 +306,7 @@ function create_speakers_taxonomies() {
 	'publicly_queryable' => true,
 	'query_var' => true,
 	'supports' => array( 'title', 'editor', 'thumbnail'),
-	'taxonomies' => array( 'speakers', 'series', 'post_tag' ),	
+	'taxonomies' => array( 'speakers', 'series', 'passages', 'post_tag' ),	
 	'exclude_from_search' => false,
 	'capability_type' => 'post',
 	'rewrite' => array( 'slug' => 'sermons' ),
@@ -386,6 +416,7 @@ function update_sermon_meta($post_id, $meta_key, $new_meta_value){
 add_action( 'init', 'create_sermon_posttype' );
 add_action( 'init', 'create_series_taxonomies', 0 );
 add_action( 'init', 'create_speakers_taxonomies', 0 );
+add_action( 'init', 'create_passages_taxonomies', 0 );
 add_action( 'load-post.php', 'sermon_meta_boxes_setup' );
 add_action( 'load-post-new.php', 'sermon_meta_boxes_setup' );
 add_action('save_post', 'sermon_save_post_class_meta');
