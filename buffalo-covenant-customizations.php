@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.18
+Version: 0.1.19
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -85,6 +85,7 @@ function all_sermons(){
 
 add_action( 'widgets_init', function(){
      register_widget( 'Featured_Event_Widget' );
+     register_widget( 'Page_Tile_Widget' );
 });	
 
 class Featured_Event_Widget extends WP_Widget {
@@ -156,18 +157,18 @@ class Featured_Event_Widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'featured_event_image' ); ?>"><?php _e( 'Image URL:' ); ?></label> <br>
 			
-			<input id="<?php echo $this->get_field_id( 'featured_event_image' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_image' ); ?>" value="<?php echo $instance[ 'featured_event_image' ] ?>"><br>
+			<input id="<?php echo $this->get_field_id( 'featured_event_image' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_image' ); ?>" value="<?php echo $featured_event_image ?>"><br>
 
 			<label for="<?php echo $this->get_field_id( 'featured_event_title' ); ?>"><?php _e( 'Title:' ); ?></label> <br>
 			
-			<input id="<?php echo $this->get_field_id( 'featured_event_title' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_title' ); ?>" value="<?php echo $instance[ 'featured_event_title' ] ?>"><br>
+			<input id="<?php echo $this->get_field_id( 'featured_event_title' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_title' ); ?>" value="<?php echo $featured_event_title ?>"><br>
 
 			<label for="<?php echo $this->get_field_id( 'featured_event_text' ); ?>"><?php _e( 'Text:' ); ?></label> <br>
-			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('featured_event_text'); ?>" name="<?php echo $this->get_field_name('featured_event_text'); ?>"><?php echo esc_textarea( $instance['featured_event_text'] ); ?></textarea>
+			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('featured_event_text'); ?>" name="<?php echo $this->get_field_name('featured_event_text'); ?>"><?php echo esc_textarea( $featured_event_text ); ?></textarea>
 
 			<label for="<?php echo $this->get_field_id( 'featured_event_link' ); ?>"><?php _e( 'Link:' ); ?></label> <br>
 			
-			<input id="<?php echo $this->get_field_id( 'featured_event_link' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_link' ); ?>" value="<?php echo $instance[ 'featured_event_link' ] ?>"><br>
+			<input id="<?php echo $this->get_field_id( 'featured_event_link' ); ?>" type="text" name="<?php echo $this->get_field_name( 'featured_event_link' ); ?>" value="<?php echo $featured_event_link ?>"><br>
 
 		</p>
 		<?php 
@@ -189,6 +190,80 @@ class Featured_Event_Widget extends WP_Widget {
 		$instance['featured_event_title'] = ( ! empty( $new_instance['featured_event_title'] ) ) ? strip_tags( $new_instance['featured_event_title'] ) : '';
 		$instance['featured_event_text'] = $new_instance['featured_event_text'];
 		$instance['featured_event_link'] = ( ! empty( $new_instance['featured_event_link'] ) ) ? strip_tags( $new_instance['featured_event_link'] ) : '';
+		return $instance;
+	}
+} // class My_Widget
+
+class Page_Tile_Widget extends WP_Widget {
+	/**
+	 * Register widget with WordPress.
+	 */
+	function __construct() {
+		parent::__construct(
+			'Page_Tile_Widget', // Base ID
+			__('Page Tile Widget', 'text_domain'), // Name
+			array('description' => __( 'Adds an tile to the page.', 'text_domain' ),) // Args
+		);
+	}
+	/**
+	 * Front-end display of widget.
+	 *
+	 * @see WP_Widget::widget()
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Saved values from database.
+	 */
+	public function widget( $args, $instance ) {
+				
+		if ( array_key_exists('before_widget', $args) ) echo $args['before_widget'];
+			if (isset($instance[ 'page_tile_link' ]) && !empty($instance[ 'page_tile_link' ]) && !($instance[ 'page_tile_link' ] == "")){
+				$tile_link = $instance[ 'page_tile_link' ];
+				$link_class = "external-link";
+			}
+			else {
+				$tile_link = "#";
+				$link_class = "dialog-link";
+			}
+			echo '<a href="' . $tile_link . '" class="' . $link_class . ' page-tile-wrapper">';
+			echo '<div class="page-tile">';
+			echo '<div class="page-tile-title">' . $instance[ 'page_tile_title' ] . '</div>';
+			echo '</div>';
+			echo '</a>';
+			echo '<div class="page-tile-text">' . $instance[ 'page_tile_text' ] . '</div>';
+			
+		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
+	}
+
+	public function form( $instance ) {
+		$page_tile_title = ( isset( $instance[ 'page_tile_title' ] ) ) ? $instance[ 'page_tile_title' ] : "";
+		$page_tile_link = ( isset( $instance[ 'page_tile_link' ] ) ) ? $instance[ 'page_tile_link' ] : "";
+		$page_tile_text = ( isset( $instance[ 'page_tile_text' ] ) ) ? $instance[ 'page_tile_text' ] : "";
+		?>
+		
+		<div>
+			<p>To use with a <strong>slide down description</strong>, enter the Text but not the Link.</p>
+			<p>To <strong>link to a different page</strong>, enter the Link but not the Text.</p>
+			<label for="<?php echo $this->get_field_id( 'page_tile_title' ); ?>"><?php _e( 'Title:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'page_tile_title' ); ?>" type="text" name="<?php echo $this->get_field_name( 'page_tile_title' ); ?>" value="<?php echo $page_tile_title ?>"><br><br>
+
+			<label for="<?php echo $this->get_field_id( 'page_tile_link' ); ?>"><?php _e( 'Link:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'page_tile_link' ); ?>" type="text" name="<?php echo $this->get_field_name( 'page_tile_link' ); ?>" value="<?php echo $page_tile_link ?>"><br><br>
+			<label for="<?php echo $this->get_field_id( 'page_tile_text' ); ?>"><?php _e( 'Text:' ); ?></label> 
+			<p>Supports HTML tags.</p>
+			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('page_tile_text'); ?>" name="<?php echo $this->get_field_name('page_tile_text'); ?>"><?php echo esc_textarea( $page_tile_text ); ?></textarea>
+
+		</div>
+		<?php 
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		
+		$instance = array();
+		$instance['page_tile_title'] = ( ! empty( $new_instance['page_tile_title'] ) ) ? strip_tags( $new_instance['page_tile_title'] ) : '';
+		$instance['page_tile_link'] = ( ! empty( $new_instance['page_tile_link'] ) ) ? strip_tags( $new_instance['page_tile_link'] ) : '';
+		$instance['page_tile_text'] = $new_instance['page_tile_text'];
 		return $instance;
 	}
 } // class My_Widget
