@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.20
+Version: 0.1.21
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -86,6 +86,7 @@ function all_sermons(){
 add_action( 'widgets_init', function(){
      register_widget( 'Featured_Event_Widget' );
      register_widget( 'Page_Tile_Widget' );
+     register_widget( 'Menu_Item_Description_Widget' );
 });	
 
 class Featured_Event_Widget extends WP_Widget {
@@ -271,6 +272,75 @@ class Page_Tile_Widget extends WP_Widget {
 		$instance['page_tile_link'] = ( ! empty( $new_instance['page_tile_link'] ) ) ? strip_tags( $new_instance['page_tile_link'] ) : '';
 		$instance['page_tile_text'] = $new_instance['page_tile_text'];
 		$instance['page_tile_color'] = ( ! empty( $new_instance['page_tile_color'] ) ) ? strip_tags( $new_instance['page_tile_color'] ) : '';
+		return $instance;
+	}
+} // class My_Widget
+
+class Menu_Item_Description_Widget extends WP_Widget {
+	/**
+	 * Register widget with WordPress.
+	 */
+	function __construct() {
+		parent::__construct(
+			'Menu_Item_Description_Widget', // Base ID
+			__('Menu Item Description Widget', 'text_domain'), // Name
+			array('description' => __( 'Adds a description to the menu.', 'text_domain' ),) // Args
+		);
+	}
+	/**
+	 * Front-end display of widget.
+	 *
+	 * @see WP_Widget::widget()
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Saved values from database.
+	 */
+	public function widget( $args, $instance ) {
+				
+		if ( array_key_exists('before_widget', $args) ) echo $args['before_widget'];
+			echo '<div class="menu-description">';
+			echo '<div class="menu-description-title">' . $instance[ 'menu_description_title' ] . '</div>';
+			echo '<div class="menu-description-text">' . $instance[ 'menu_description_text' ] . '</div>';
+			echo '<div class="menu-description-button"><a href="' . $instance['menu_description_link'] . '"><button>' . $instance['menu_description_button_text'] . '</button></a></div>';
+			
+		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
+	}
+
+	public function form( $instance ) {
+		$menu_description_title = ( isset( $instance[ 'menu_description_title' ] ) ) ? $instance[ 'menu_description_title' ] : "";
+		$menu_description_link = ( isset( $instance[ 'menu_description_link' ] ) ) ? $instance[ 'menu_description_link' ] : "";
+		$menu_description_text = ( isset( $instance[ 'menu_description_text' ] ) ) ? $instance[ 'menu_description_text' ] : "";
+		$menu_description_button_text = ( isset( $instance[ 'menu_description_button_text' ] ) ) ? $instance[ 'menu_description_button_text' ] : "";
+		?>
+		
+		<div>
+			<label for="<?php echo $this->get_field_id( 'menu_description_title' ); ?>"><?php _e( 'Title:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'menu_description_title' ); ?>" type="text" name="<?php echo $this->get_field_name( 'menu_description_title' ); ?>" value="<?php echo $menu_description_title ?>"><br><br>
+
+			<label for="<?php echo $this->get_field_id( 'menu_description_link' ); ?>"><?php _e( 'Link:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'menu_description_link' ); ?>" type="text" name="<?php echo $this->get_field_name( 'menu_description_link' ); ?>" value="<?php echo $menu_description_link ?>"><br><br>
+
+			<label for="<?php echo $this->get_field_id( 'menu_description_button_text' ); ?>"><?php _e( 'Button Text:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'menu_description_button_text' ); ?>" type="text" name="<?php echo $this->get_field_name( 'menu_description_button_text' ); ?>" value="<?php echo $menu_description_button_text ?>"><br><br>
+
+			<label for="<?php echo $this->get_field_id( 'menu_description_text' ); ?>"><?php _e( 'Description:' ); ?></label> 
+			<p>Supports HTML tags.</p>
+			<textarea class="widefat" rows="4" cols="20" id="<?php echo $this->get_field_id('menu_description_text'); ?>" name="<?php echo $this->get_field_name('menu_description_text'); ?>"><?php echo esc_textarea( $menu_description_text ); ?></textarea>
+
+		</div>
+		<?php 
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		
+		$instance = array();
+		$instance['menu_description_title'] = ( ! empty( $new_instance['menu_description_title'] ) ) ? strip_tags( $new_instance['menu_description_title'] ) : '';
+		$instance['menu_description_link'] = ( ! empty( $new_instance['menu_description_link'] ) ) ? strip_tags( $new_instance['menu_description_link'] ) : '';
+		$instance['menu_description_button_text'] = ( ! empty( $new_instance['menu_description_button_text'] ) ) ? strip_tags( $new_instance['menu_description_button_text'] ) : '';
+		$instance['menu_description_text'] = $new_instance['menu_description_text'];
 		return $instance;
 	}
 } // class My_Widget
