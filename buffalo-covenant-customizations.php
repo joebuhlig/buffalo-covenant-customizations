@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.22
+Version: 0.1.23
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -226,11 +226,9 @@ class Page_Tile_Widget extends WP_Widget {
 				$tile_link = "#";
 				$link_class = "dialog-link";
 			}
-			echo '<a href="' . $tile_link . '" class="' . $link_class . ' page-tile-wrapper">';
-			echo '<div class="page-tile" style="background-color:' . $instance[ 'page_tile_color' ] . ';">';
-			echo '<div class="page-tile-title">' . $instance[ 'page_tile_title' ] . '<br><button>Learn More</button></div>';
+			echo '<div class="page-tile">';
+			echo '<div class="page-tile-title"><span>' . $instance[ 'page_tile_title' ] . '</span><span class="tile-toggle" data-toggle="collapse" data-parent="#accordion"></span></div>';
 			echo '</div>';
-			echo '</a>';
 			echo '<div class="page-tile-text">' . $instance[ 'page_tile_text' ] . '</div>';
 			
 		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
