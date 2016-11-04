@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.21
+Version: 0.1.22
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -87,6 +87,7 @@ add_action( 'widgets_init', function(){
      register_widget( 'Featured_Event_Widget' );
      register_widget( 'Page_Tile_Widget' );
      register_widget( 'Menu_Item_Description_Widget' );
+     register_widget( 'Menu_Image_Widget' );
 });	
 
 class Featured_Event_Widget extends WP_Widget {
@@ -341,6 +342,63 @@ class Menu_Item_Description_Widget extends WP_Widget {
 		$instance['menu_description_link'] = ( ! empty( $new_instance['menu_description_link'] ) ) ? strip_tags( $new_instance['menu_description_link'] ) : '';
 		$instance['menu_description_button_text'] = ( ! empty( $new_instance['menu_description_button_text'] ) ) ? strip_tags( $new_instance['menu_description_button_text'] ) : '';
 		$instance['menu_description_text'] = $new_instance['menu_description_text'];
+		return $instance;
+	}
+} // class My_Widget
+
+class Menu_Image_Widget extends WP_Widget {
+	/**
+	 * Register widget with WordPress.
+	 */
+	function __construct() {
+		parent::__construct(
+			'Menu_Image_Widget', // Base ID
+			__('Menu Image Widget', 'text_domain'), // Name
+			array('description' => __( 'Adds an image link to the menu.', 'text_domain' ),) // Args
+		);
+	}
+	/**
+	 * Front-end display of widget.
+	 *
+	 * @see WP_Widget::widget()
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Saved values from database.
+	 */
+	public function widget( $args, $instance ) {
+				
+		if ( array_key_exists('before_widget', $args) ) echo $args['before_widget'];
+			echo '<div class="menu-image">';
+			echo '<a href="' .  $instance['menu_image_link'] . '">';
+			echo '<img src="' . $instance[ 'menu_image' ] . '">';
+			echo '</a></div>';
+			
+		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
+	}
+
+	public function form( $instance ) {
+		$menu_image_link = ( isset( $instance[ 'menu_image_link' ] ) ) ? $instance[ 'menu_image_link' ] : "";
+		$menu_image = ( isset( $instance[ 'menu_image' ] ) ) ? $instance[ 'menu_image' ] : "";
+		?>
+		
+		<div>
+			<label for="<?php echo $this->get_field_id( 'menu_image_link' ); ?>"><?php _e( 'Link:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'menu_image_link' ); ?>" type="text" name="<?php echo $this->get_field_name( 'menu_image_link' ); ?>" value="<?php echo $menu_image_link ?>"><br><br>
+
+			<label for="<?php echo $this->get_field_id( 'menu_image' ); ?>"><?php _e( 'Image URL:' ); ?></label> <br>
+			
+			<input id="<?php echo $this->get_field_id( 'menu_image' ); ?>" type="text" name="<?php echo $this->get_field_name( 'menu_image' ); ?>" value="<?php echo $menu_image ?>">
+
+		</div>
+		<?php 
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		
+		$instance = array();
+		$instance['menu_image'] = ( ! empty( $new_instance['menu_image'] ) ) ? strip_tags( $new_instance['menu_image'] ) : '';
+		$instance['menu_image_link'] = ( ! empty( $new_instance['menu_image_link'] ) ) ? strip_tags( $new_instance['menu_image_link'] ) : '';
 		return $instance;
 	}
 } // class My_Widget
