@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.24
+Version: 0.1.25
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -87,6 +87,7 @@ add_action( 'widgets_init', function(){
      register_widget( 'Featured_Event_Widget' );
      register_widget( 'Menu_Item_Description_Widget' );
      register_widget( 'Menu_Image_Widget' );
+     register_widget( 'Menu_Latest_Sermon_Widget' );
 });	
 
 class Featured_Event_Widget extends WP_Widget {
@@ -317,6 +318,67 @@ class Menu_Image_Widget extends WP_Widget {
 		$instance = array();
 		$instance['menu_image'] = ( ! empty( $new_instance['menu_image'] ) ) ? strip_tags( $new_instance['menu_image'] ) : '';
 		$instance['menu_image_link'] = ( ! empty( $new_instance['menu_image_link'] ) ) ? strip_tags( $new_instance['menu_image_link'] ) : '';
+		return $instance;
+	}
+} // class My_Widget
+
+class Menu_Latest_Sermon_Widget extends WP_Widget {
+	/**
+	 * Register widget with WordPress.
+	 */
+	function __construct() {
+		parent::__construct(
+			'Menu_Latest_Sermon_Widget', // Base ID
+			__('Menu Latest Sermon Widget', 'text_domain'), // Name
+			array('description' => __( 'Adds the latest sermon to the menu.', 'text_domain' ),) // Args
+		);
+	}
+	/**
+	 * Front-end display of widget.
+	 *
+	 * @see WP_Widget::widget()
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Saved values from database.
+	 */
+	public function widget( $args, $instance ) {
+				
+		if ( array_key_exists('before_widget', $args) ) echo $args['before_widget'];
+			$sermon = get_latest_sermon();
+			echo '<div class="menu-section">';
+			echo '<h2>Latest Message</h2>';
+			echo '<a style="width:200px;" href="' . $sermon['link'] . '">';
+			echo '<img class="sermon-thumbnail" src="' . $sermon['thumb_src'] . '">';
+			echo '</a>';
+			echo '</div>';
+			
+		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
+	}
+	/**
+	 * Back-end widget form.
+	 *
+	 * @see WP_Widget::form()
+	 *
+	 * @param array $instance Previously saved values from database.
+	 */
+	public function form( $instance ) {
+		?>
+		<p>No settings for this widget.</p>
+		<?php 
+	}
+	/**
+	 * Sanitize widget form values as they are saved.
+	 *
+	 * @see WP_Widget::update()
+	 *
+	 * @param array $new_instance Values just sent to be saved.
+	 * @param array $old_instance Previously saved values from database.
+	 *
+	 * @return array Updated safe values to be saved.
+	 */
+	public function update( $new_instance, $old_instance ) {
+		
+		$instance = array();
 		return $instance;
 	}
 } // class My_Widget
