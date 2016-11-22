@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.25
+Version: 0.1.26
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -221,7 +221,7 @@ class Menu_Item_Description_Widget extends WP_Widget {
 			echo '<div class="menu-description">';
 			echo '<div class="menu-description-title">' . $instance[ 'menu_description_title' ] . '</div>';
 			echo '<div class="menu-description-text">' . $instance[ 'menu_description_text' ] . '</div>';
-			echo '<div class="menu-description-button"><a href="' . $instance['menu_description_link'] . '"><button>' . $instance['menu_description_button_text'] . '</button></a></div>';
+			if ($instance['menu_description_button_text']) { echo '<div class="menu-description-button"><a href="' . $instance['menu_description_link'] . '"><button>' . $instance['menu_description_button_text'] . '</button></a></div>';};
 			
 		if ( array_key_exists('after_widget', $args) ) echo $args['after_widget'];
 	}
