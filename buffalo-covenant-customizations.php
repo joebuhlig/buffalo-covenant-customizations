@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.26
+Version: 0.1.27
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -759,7 +759,10 @@ function bcc_page_meta_box( $object, $box ) { ?>
 
   <p>
     <label for="hide-page-title"><?php _e( "Hide Page Title?", 'example' ); ?></label>
-    <input type="checkbox" name="hide-page-title" id="hide-page-title" <?php if (get_post_meta( $object->ID, 'hide_page_title', true ) ): ?>checked<?php endif; ?> />
+    <input type="checkbox" name="hide-page-title" id="hide-page-title" <?php if (get_post_meta( $object->ID, 'hide_page_title', true ) ): ?>checked<?php endif; ?> /><br>
+
+    <label for="hide-page-sidebar"><?php _e( "Hide Page Sidebar?", 'example' ); ?></label>
+    <input type="checkbox" name="hide-page-sidebar" id="hide-page-sidebar" <?php if (get_post_meta( $object->ID, 'hide_page_sidebar', true ) ): ?>checked<?php endif; ?> />
     </p>
 <?php }
 
@@ -780,8 +783,10 @@ function bcc_page_save_post_class_meta( $post_id ) {
 
   /* Get the posted data and sanitize it for use as an HTML class. */
   $new_hide_page_title_value = isset( $_POST['hide-page-title']);
+  $new_hide_page_sidebar_value = isset( $_POST['hide-page-sidebar']);
 
   update_bcc_page_meta($post->ID, 'hide_page_title', $new_hide_page_title_value);
+  update_bcc_page_meta($post->ID, 'hide_page_sidebar', $new_hide_page_sidebar_value);
 }
 
 function update_bcc_page_meta($post_id, $meta_key, $new_meta_value){
