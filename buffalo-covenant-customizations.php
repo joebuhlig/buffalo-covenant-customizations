@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.28
+Version: 0.1.29
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -474,8 +474,8 @@ function create_passages_taxonomies() {
  function create_sermon_posttype() {
 // set up labels
 	$labels = array(
- 		'name' => 'Sermons',
-    	'singular_name' => 'Sermon',
+ 		'name' => 'Media',
+    	'singular_name' => 'Media',
     	'add_new' => 'Add New Sermon',
     	'add_new_item' => 'Add New Sermon',
     	'edit_item' => 'Edit Sermon',
@@ -499,7 +499,7 @@ function create_passages_taxonomies() {
 	'taxonomies' => array( 'speakers', 'series', 'passages', 'post_tag' ),	
 	'exclude_from_search' => false,
 	'capability_type' => 'post',
-	'rewrite' => array( 'slug' => 'sermons' ),
+	'rewrite' => array( 'slug' => 'media' ),
     	'menu_icon' => 'dashicons-video-alt3',
     )
   );
