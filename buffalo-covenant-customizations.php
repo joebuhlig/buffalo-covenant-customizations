@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.30
+Version: 0.1.31
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
