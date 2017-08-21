@@ -5,7 +5,7 @@
 /*
 Plugin Name: Buffalo Covenant Customizations
 Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
-Version: 0.1.29
+Version: 0.1.30
 Author: Joe Buhlig
 Author URI: http://joebuhlig.com
 GitHub Plugin URI: https://github.com/joebuhlig/buffalo-covenant-customizations
@@ -764,6 +764,9 @@ function bcc_page_meta_box( $object, $box ) { ?>
     <label for="hide-page-sidebar"><?php _e( "Hide Page Sidebar?", 'example' ); ?></label>
     <input type="checkbox" name="hide-page-sidebar" id="hide-page-sidebar" <?php if (get_post_meta( $object->ID, 'hide_page_sidebar', true ) ): ?>checked<?php endif; ?> /><br>
 
+    <label for="hide-page-header-image"><?php _e( "Hide Page Header Image?", 'example' ); ?></label>
+    <input type="checkbox" name="hide-page-header-image" id="hide-page-header-image" <?php if (get_post_meta( $object->ID, 'hide_page_header_image', true ) ): ?>checked<?php endif; ?> /><br>
+
     <label for="mobile-header"><?php _e( "Mobile Header URL", 'example' ); ?></label>
     <input type="text" name="mobile-header" id="mobile-header" value="<?php echo esc_attr( get_post_meta( $object->ID, 'mobile_header', true ) ); ?>" size="30" /><br>
     </p>
@@ -787,10 +790,12 @@ function bcc_page_save_post_class_meta( $post_id ) {
   /* Get the posted data and sanitize it for use as an HTML class. */
   $new_hide_page_title_value = isset( $_POST['hide-page-title']);
   $new_hide_page_sidebar_value = isset( $_POST['hide-page-sidebar']);
+  $new_hide_page_header_image_value = isset( $_POST['hide-page-header-image']);
   $new_mobile_header_value = ( isset( $_POST['mobile-header'] ) ? $_POST['mobile-header'] : '' );
 
   update_bcc_page_meta($post->ID, 'hide_page_title', $new_hide_page_title_value);
   update_bcc_page_meta($post->ID, 'hide_page_sidebar', $new_hide_page_sidebar_value);
+  update_bcc_page_meta($post->ID, 'hide_page_header_image', $new_hide_page_header_image_value);
   update_bcc_page_meta($post->ID, 'mobile_header', $new_mobile_header_value);
 }
 
